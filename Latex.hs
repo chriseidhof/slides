@@ -5,7 +5,9 @@ import Frame hiding (title, text)
 import qualified Frame as F
 import Text.PrettyPrint.HughesPJ
 
-lhs = vcat . map (lhsSec 0) . sections
+renderLhs :: Presentation -> Doc
+renderLhs presentation = c1 "documentclass" "beamer" $+$
+  (with "document" $ vcat $ map (lhsSec 0) $ sections presentation)
 
 lhsSec :: Int -> Section -> Doc
 lhsSec n sec = c ((concat $ replicate n "sub")  ++ "section") <> braces (text $ name sec)
@@ -23,14 +25,20 @@ lhsFrame f = c "frame{" $+$ (
 lhsFrameMarkup (TitlePage)  = c "titlepage"
 lhsFrameMarkup (Image i sz) = with "figure" $ c1 "includegraphics" i
 lhsFrameMarkup (a :&: b )   = lhsFrameMarkup a $+$ lhsFrameMarkup b
-lhsFrameMarkup (Code _ c)   = vcat $ [space] ++ (map (\x -> text $ ">" ++ x) (lines c)) ++ [space]
+lhsFrameMarkup (Code "haskell" c)   = vcat $ [space] ++ ((\x -> text $ ">" ++ x) `map` lines c) ++ [space]
+lhsFrameMarkup (Code _ c)   = with "verbatim" (text c) 
 lhsFrameMarkup (Text t)     = text t
 lhsFrameMarkup (Bullet bs)  = with "itemize" $ vcat $ map item bs
  where item i = c "item" <> space <> text i
 
 -- command
+c :: String -> Doc
 c x = text "\\" <> text x
+
+with :: String -> Doc -> Doc
 with x body = c1 "begin" x $+$ body $+$ c1 "end" x
+
+c1 :: String -> String -> Doc
 c1 x y = c x <> braces (text y)
 
 class Outline t where

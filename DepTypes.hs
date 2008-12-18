@@ -4,11 +4,14 @@ import Slides
 import Frame hiding (ruby)
 import qualified Frame
 import Latex
+import Text.PrettyPrint.HughesPJ (render)
+
+main = putStrLn $ render $ renderLhs agda
 
 agda = Presentation "Silver Bullet: Dependent Types" "Chris Eidhof" asections
 
 asections = [ introduction
-           ,Section "The Action" []
+           ,  Section "The Action" []
               [ Section "Typing the shell" [] []
               , Section "Relational databases" [] []
               , Section "Other examples" []
@@ -26,7 +29,7 @@ asections = [ introduction
            ]
 
 introduction = Section "Introduction" 
-               [ frame "" (titlePage <&> image "images/silver-bullet.jpg" 4)
+               [ frame "" (titlePage {- <&> image "images/silver-bullet.jpg" 4 -})
                , frame "Curl in Ruby" rubyCode
                ]
                [ Section "Curl" [] []
